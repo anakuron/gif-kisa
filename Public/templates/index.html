@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+   <html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <title>Nakkiservo kuvagalleria</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=yes"/>
+      <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+      <link rel="stylesheet" type="text/css" href="https://unpkg.com/applause-button/dist/applause-button.css">
+   <!-- Global site tag (gtag.js) - Google Analytics -->
+   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-136232333-3"></script>
+   <script>
+   window.dataLayer = window.dataLayer || [];
+   function gtag(){dataLayer.push(arguments);}
+   gtag('js', new Date());
+
+   gtag('config', 'UA-136232333-3');
+   </script>
+   <style>
+      #black-bg {background: linear-gradient(to bottom right, #222222,#2b2b2b) fixed;
+         min-height:100vh;}
+      #dark-label {background-color:#e8e8e8;
+      font-size: 10pt;}
+      #light-bg {background-color:rgb(95, 95, 95);
+      padding:12%;}
+   </style>
+         <script type="text/javascript">
+            function ShowLoading(e) {
+                var div = document.createElement('div');
+                var img = document.createElement('img');
+                img.src = 'templates/ajax-loader.gif';
+                div.innerHTML = "<h2>Uploading...</h2>";
+                div.style.cssText = 'position: absolute; top: 0%; left: 0%; z-index: 5000;width: 100%; height: 20%; text-align: center;background: rgb(255, 255, 255);padding: 40px; border: 1px solid rgb(0, 0, 0)';
+                div.appendChild(img);
+                document.body.appendChild(div);
+                return true;
+                // These 2 lines cancel form submission, so only use if needed.
+                //window.event.cancelBubble = true;
+                //e.stopPropagation();
+            }
+        </script>
+ 
+</head>
+<body>
+  
+   <div class="ui inverted left vertical sidebar labeled icon menu">
+            <div class="ui inverted segment">
+         <a class="content">
+            <br>
+            <form action="upload.php" method="post" enctype="multipart/form-data" onsubmit="ShowLoading()">
+               <div class="ui input">
+                  <input type="text" name="folder" placeholder="nick"><p></p>
+                  
+               </div><br><br>
+               <input class="ui inverted button" type="file" name="fileToUpload" id="fileToUpload"><br><br>
+              
+               <input class="ui button" type="submit" value="Upload Image" name="submit"><br>
+            </form>
+            <p></p>
+            <font color="white">note: space is not allowed for the nick</font>
+            <script>$('.ui.input input').keyup(function(){
+               str = $(this).val()
+               str = str.replace(/\s/g,'')
+               $(this).val(str)
+           });</script>
+         </a>
+      
+            </div>
+   </div>
+
+<div class="pusher">
+<div id="black-bg">
+<br>
+<div class="ui container">
+      <div class="ui container"><img src="templates/logo.svg" alt="logo"></div><p></p><p></p>
+      <button class="ui left huge icon button" tabindex="0" onclick="menulist()" type="button">
+         <i class="green cloud upload icon"></i>
+      </button>
+      <br><br><br>
+      <script>function menulist() {$('.ui.sidebar').sidebar('toggle');}</script>
+</div>
+
+      <div class="ui container">
+            <div class="ui four stackable cards">
+               
+               {% for file in files %}
+               <div class="ui card">
+
+                  <div id="dark-label" class="ui fluid label">
+                     <span>
+                     <i class="quote right icon"></i>{{ file["name"] }}<p></p>
+                     {% if file["age"] > 86400 %}
+                        {{ (file["age"] / 86400)|int }} days ago
+                     {% elif file["age"] > 3600 %}
+                        {{ (file["age"] / 3600)|int }} hours ago
+                     {% elif file["age"] > 60 %}
+                        {{ (file["age"] / 60)|int }} minutes ago
+                     {% else %}
+                        {{ (file["age"])|int }} seconds ago
+                     {% endif %}
+                     </span>
+                  </div>
+                  
+                  <a class="image" href="/static/gallery/{{ file["location"] }}/{{ file["name"] }}">
+                  {% if file["name"].lower().endswith((".jpg", ".gif", ".jpeg", ".png", ".bmp")) %}
+                  <img width="100%" src="/static/gallery-preview/{{ file["location"] }}/{{ file["name"] }}"></a>
+                  
+                  {% else %}
+               
+                  <div id="light-bg" class="content">
+                     <div class="ui inverted center aligned container">
+                        <a class="ui massive icon button" href="/static/gallery/{{ file["location"] }}/{{ file["name"] }}">
+                        <i class="file image icon"></i>click to view</a>
+                     </div>
+                  </div>
+               
+                  {% endif %}
+
+                  <div class="ui content">
+                     <div class="ui circular label">
+                        <span>
+                           <i class="user icon"></i>{{file["location"].split("/")[-1]}}
+                        </span>
+                        
+                     </div>
+                     
+                     <div class="ui right floated item">
+                        <applause-button color="black" url="Nakki-Juhannus-2019{{ file["name"] }}" style="width: 40px; height: 40px;"/>
+                     </div>
+                  </div>
+                  
+                  <div class="ui inverted bottom attached button">
+                        <a href="{{ file["location"] }}"><i class="eye icon"></i>View all from this user</a>
+                  </div>
+               </div>
+               {% endfor %}
+            </div>
+      </div>
+</div>
+</div>
+</body>
