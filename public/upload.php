@@ -19,6 +19,10 @@
             <div class="ui content">
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // folder thingy
 $folder = $_POST['folder'];
 $dirPath = 'gallery/'.$folder;
@@ -32,14 +36,11 @@ echo $dirPath . " has been created<br>";
 echo $dirPath . " has not been created<br>";
 }
 
-
 //$target_dir = "uploads/";
 $target_dir = $dirPath."/";
 $target_file = $target_dir. basename($_FILES["fileToUpload"]["name"]);
 $uploadOk = 1;
 $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-
-
 
 // Check if image file is a actual image or fake image
 if(isset($_POST["submit"])) {
@@ -52,6 +53,7 @@ if(isset($_POST["submit"])) {
         $uploadOk = 0;
     }
 }
+
 // Check if file already exists
 if (file_exists($target_file)) {
     echo "file already exists.<br>";
@@ -63,9 +65,10 @@ if ($_FILES["fileToUpload"]["size"] > 500000*16) {
     $uploadOk = 0;
 }
 // Allow certain file formats
-if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-&& $imageFileType != "gif" && $imageFileType != "bmp" ) {
-    echo "only JPG, JPEG, PNG, BMP & GIF files are allowed.<br>";
+if($imageFileType != "gif"
+//&& $imageFileType != "gif" && $imageFileType != "bmp" 
+) {
+    echo "only GIF files are allowed.<br>";
     $uploadOk = 0;
 }
 // Check if $uploadOk is set to 0 by an error
@@ -76,9 +79,9 @@ if ($uploadOk == 0) {
     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
         echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.<br>";
 
-
+echo "running mogrify";
         $output = shell_exec("./mogrify.sh $target_file $folder");
-        
+ 	echo "mogrify ok";
 
         $previousPage = $_SERVER["HTTP_REFERER"];
         header('Location: '.$previousPage);
